@@ -84,12 +84,15 @@ do {
     } else if arguments.contains("--status") || arguments.contains("--self-test") {
         let displays = try ScreenSnapshot.displays()
         let position = CGEvent(source: nil)?.location ?? .zero
+        let displayFocus = NativeDisplayFocus()
         let info: [String: Any] = [
             "bundleID": Bundle.main.bundleIdentifier ?? "unbundled",
             "version": Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "development",
             "agentApp": Bundle.main.object(forInfoDictionaryKey: "LSUIElement") as? Bool ?? false,
             "loginItem": loginStatus(),
             "cursorScale": NativeCursor()?.scale() as Any? ?? NSNull(),
+            "displayFocusAvailable": displayFocus != nil,
+            "activeMenuBarDisplay": displayFocus?.activeDisplayID() as Any? ?? NSNull(),
             "cursor": ["x": position.x, "y": position.y],
             "displays": displays.map { ["id": $0.id, "x": $0.bounds.minX, "y": $0.bounds.minY, "width": $0.bounds.width, "height": $0.bounds.height] as [String: Any] },
         ]

@@ -26,6 +26,8 @@ enum ScreenSnapshot {
 final class TeleportService {
     let pulse = CursorPulse()
     private let edgeFlash = ScreenEdgeFlash()
+    private let displayFocus = NativeDisplayFocus()
+    private var reportedFocusFailure = false
 
     func stopEffects() {
         pulse.stop()
@@ -40,6 +42,10 @@ final class TeleportService {
         let destination = next.center
         let result = CGWarpMouseCursorPosition(destination)
         guard result == .success else { throw AppError.message("포인터 이동 실패: \(result.rawValue)") }
+        if displayFocus?.activate(next.id) != true, !reportedFocusFailure {
+            report("활성 디스플레이를 변경하지 못했습니다. 커서 이동과 도착 효과는 계속 동작합니다.")
+            reportedFocusFailure = true
+        }
         edgeFlash.show(on: next.id)
         pulse.show()
         return destination
