@@ -2,7 +2,7 @@
 
 - 일반 작업은 현재 `main`에서 진행한다. 사용자 요청 없이 PR이나 GitHub Actions를 만들지 않는다.
 - 빌드·검증·릴리스는 로컬 Mac에서 수행한다. `make check`, `make package`, `make release`가 진입점이다.
-- 앱은 창·메뉴바·Dock 항목 없이 동작한다. `LSBackgroundOnly`와 비활성화 정책을 유지한다.
+- 앱은 일반 창·메뉴바·Dock 항목 없이 동작한다. `LSUIElement`와 accessory 정책을 유지한다. 도착 효과용 패널은 비활성·클릭 통과 상태로 짧게 표시하고 반드시 닫는다.
 - 디스플레이 선택은 `TeleportCore`에 두고 Quartz 좌표를 사용한다.
 - 커서 확대가 macOS의 내장 흔들기 제스처를 직접 실행한다고 표현하지 않는다. 실제 시스템 커서를 비공개 API로 조절한다는 제약을 명시한다.
 - 한국어 문서·주석, 영어 식별자를 사용한다.

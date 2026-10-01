@@ -25,6 +25,12 @@ enum ScreenSnapshot {
 @MainActor
 final class TeleportService {
     let pulse = CursorPulse()
+    private let edgeFlash = ScreenEdgeFlash()
+
+    func stopEffects() {
+        pulse.stop()
+        edgeFlash.stop()
+    }
 
     @discardableResult func teleport() throws -> CGPoint? {
         // 드래그 도중 파일이나 선택 영역을 다른 화면으로 끌어가는 부작용을 막는다.
@@ -34,6 +40,7 @@ final class TeleportService {
         let destination = next.center
         let result = CGWarpMouseCursorPosition(destination)
         guard result == .success else { throw AppError.message("포인터 이동 실패: \(result.rawValue)") }
+        edgeFlash.show(on: next.id)
         pulse.show()
         return destination
     }

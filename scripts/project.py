@@ -49,7 +49,7 @@ def inspect(app, expected_commit=None):
     info = plistlib.loads((app / "Contents/Info.plist").read_bytes())
     if (info.get("CFBundleIdentifier") != BUNDLE_ID or
             info.get("CFBundleShortVersionString") != version() or
-            info.get("LSBackgroundOnly") is not True or
+            info.get("LSUIElement") is not True or
             (expected_commit and info.get("MouseTeleportationGitCommit") != expected_commit)):
         raise RuntimeError(f"앱 메타데이터가 소스와 다릅니다: {app}")
     if run("lipo", "-archs", executable(app), capture=True) != "arm64":
@@ -296,6 +296,7 @@ def prepare():
 - 메뉴바, Dock, Command + Tab에 표시되지 않는 백그라운드 앱
 - 최초 실행 시 로그인 자동 시작 등록
 - 실제 시스템 커서를 잠깐 확대하고 원래 크기로 복원
+- 도착 화면의 사각 가장자리에 약 0.24초의 부드럽고 넓은 푸른빛 효과 표시
 - 모니터가 3대 이상이면 왼쪽부터, 같은 x에서는 위부터 순환
 
 macOS 14 이상 / Apple Silicon. DMG를 열어 앱을 Applications로 옮긴 뒤 실행하세요.

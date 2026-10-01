@@ -60,21 +60,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         for name in [NSWorkspace.willSleepNotification, NSWorkspace.sessionDidResignActiveNotification] {
             observers.append(NSWorkspace.shared.notificationCenter.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
-                MainActor.assumeIsolated { self?.service.pulse.stop() }
+                MainActor.assumeIsolated { self?.service.stopEffects() }
             })
         }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         shortcut?.stop()
-        service.pulse.stop()
+        service.stopEffects()
         for observer in observers { NSWorkspace.shared.notificationCenter.removeObserver(observer) }
     }
 }
 
 let arguments = Set(CommandLine.arguments.dropFirst())
 let app = NSApplication.shared
-app.setActivationPolicy(.prohibited)
+// 비활성 패널을 그리는 본체만 accessory로 실행한다. Dock·메뉴바 항목은 만들지 않는다.
+app.setActivationPolicy(arguments.isEmpty || arguments.contains("--teleport-once") ? .accessory : .prohibited)
 
 do {
     if arguments.contains("--cursor-pulse") {
@@ -86,7 +87,7 @@ do {
         let info: [String: Any] = [
             "bundleID": Bundle.main.bundleIdentifier ?? "unbundled",
             "version": Bundle.main.infoDictionary?["CFBundleShortVersionString"] ?? "development",
-            "backgroundOnly": Bundle.main.object(forInfoDictionaryKey: "LSBackgroundOnly") as? Bool ?? false,
+            "agentApp": Bundle.main.object(forInfoDictionaryKey: "LSUIElement") as? Bool ?? false,
             "loginItem": loginStatus(),
             "cursorScale": NativeCursor()?.scale() as Any? ?? NSNull(),
             "cursor": ["x": position.x, "y": position.y],
@@ -96,7 +97,7 @@ do {
         print(String(decoding: data, as: UTF8.self))
         if arguments.contains("--self-test") {
             guard Bundle.main.bundleIdentifier == "net.jeonghyeon.MouseTeleportation",
-                  Bundle.main.object(forInfoDictionaryKey: "LSBackgroundOnly") as? Bool == true,
+                  Bundle.main.object(forInfoDictionaryKey: "LSUIElement") as? Bool == true,
                   NativeCursor()?.scale() != nil else { exit(1) }
         }
     } else if arguments.contains("--enable-login") {
@@ -109,7 +110,10 @@ do {
         print(loginStatus())
     } else if arguments.contains("--teleport-once") {
         let service = TeleportService()
-        if let point = try service.teleport() { print("Moved to \(point.x), \(point.y)") }
+        if let point = try service.teleport() {
+            print("Moved to \(point.x), \(point.y)")
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: ScreenEdgeFlash.duration + 0.05))
+        }
         else { print("No movement: one display or mouse button held.") }
     } else if !arguments.isEmpty {
         print("Mouse Teleportation: --status | --self-test | --enable-login | --disable-login | --teleport-once")
