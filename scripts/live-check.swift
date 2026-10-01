@@ -12,6 +12,7 @@ func require(_ condition: Bool, _ message: String) throws {
 
 let bundleID = "net.jeonghyeon.MouseTeleportation"
 let original = CGEvent(source: nil)!.location
+let originalMouseMoves = CGEventSource.counterForEventType(.hidSystemState, eventType: .mouseMoved)
 let frontmost = NSWorkspace.shared.frontmostApplication
 let primaryDisplay = CGMainDisplayID()
 let sky = dlopen("/System/Library/PrivateFrameworks/SkyLight.framework/SkyLight", RTLD_NOW)!
@@ -92,7 +93,7 @@ do {
     try require(scale() > baseline + 0.5, "실제 시스템 커서 배율 증가")
     pressTab(down: true, repeatKey: true)
     pause(0.1)
-    try require(near(point(), target), "길게 누른 Tab 반복 입력 억제")
+    try require(near(point(), target), "길게 누른 Tab 반복 입력 억제 (\(point()) / \(target))")
     try require(activeDisplay().map { CGDisplayBounds($0) } == displays[1], "키 반복 중 활성 디스플레이 유지")
     pressTab(down: false)
     pause(0.1)
@@ -143,5 +144,7 @@ do {
     print("실제 전역 입력 검사 완료")
 } catch {
     fputs("FAIL: \(error)\n", stderr)
+    let mouseMoves = CGEventSource.counterForEventType(.hidSystemState, eventType: .mouseMoved) &- originalMouseMoves
+    fputs("검사 중 mouseMoved 이벤트: \(mouseMoves). 외부 포인터 입력이 있으면 위치 검사가 간섭받을 수 있습니다.\n", stderr)
     exit(1)
 }

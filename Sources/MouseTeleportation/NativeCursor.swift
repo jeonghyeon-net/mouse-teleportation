@@ -1,4 +1,4 @@
-import AppKit
+import Foundation
 import Darwin
 
 /// 실제 WindowServer 커서를 확대한다. 공개 API가 아니므로 심볼이 없으면 이동 기능만 유지한다.

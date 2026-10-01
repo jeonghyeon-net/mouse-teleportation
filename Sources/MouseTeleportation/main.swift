@@ -1,5 +1,4 @@
 import AppKit
-import Carbon
 import ServiceManagement
 import TeleportCore
 
@@ -73,15 +72,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 let arguments = Set(CommandLine.arguments.dropFirst())
-let app = NSApplication.shared
-// 비활성 패널을 그리는 본체만 accessory로 실행한다. Dock·메뉴바 항목은 만들지 않는다.
-app.setActivationPolicy(arguments.isEmpty || arguments.contains("--teleport-once") ? .accessory : .prohibited)
 
 do {
+    // 커서 helper에는 창·앱 이벤트 루프가 필요 없다. NSApplication 초기화 전에 실행한다.
     if arguments.contains("--cursor-pulse") {
         guard let cursor = NativeCursor(), let runner = PulseRunner(cursor: cursor) else { throw AppError.message("시스템 커서 확대 API를 사용할 수 없습니다.") }
         runner.run()
-    } else if arguments.contains("--status") || arguments.contains("--self-test") {
+        exit(0)
+    }
+    let app = NSApplication.shared
+    // 비활성 패널을 그리는 본체만 accessory로 실행한다. Dock·메뉴바 항목은 만들지 않는다.
+    app.setActivationPolicy(arguments.isEmpty || arguments.contains("--teleport-once") ? .accessory : .prohibited)
+
+    if arguments.contains("--status") || arguments.contains("--self-test") {
         let displays = try ScreenSnapshot.displays()
         let position = CGEvent(source: nil)?.location ?? .zero
         let displayFocus = NativeDisplayFocus()

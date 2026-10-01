@@ -58,6 +58,7 @@ Swift·AppKit으로 구현했으며 외부 런타임 의존성이 없습니다. 
 - [로컬 릴리스](docs/releasing.md)
 - [구조와 제약](docs/architecture.md)
 - [검증 기록](docs/verification.md)
+- [의존성과 성능 점검](docs/performance.md)
 - [변경 기록](CHANGELOG.md) · [보안 제보](SECURITY.md)
 
 [Menu Bar Dock](https://github.com/jeonghyeon-net/menubar-dock)의 문서와 로컬 배포 구성을 참고했습니다. [MIT 라이선스](LICENSE)로 배포합니다.
