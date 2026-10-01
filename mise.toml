@@ -1,0 +1,16 @@
+[tasks.build]
+run = "make build"
+[tasks.test]
+run = "make test"
+[tasks.check]
+run = "make check"
+[tasks.install]
+run = "make install"
+[tasks.live-check]
+run = "make live-check"
+[tasks.package]
+run = "make package"
+[tasks.release-prepare]
+run = "make release-prepare"
+[tasks.release]
+run = "make release"

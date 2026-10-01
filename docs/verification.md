@@ -1,0 +1,27 @@
+# 검증 기록
+
+검증일: 2026-10-01 (Asia/Seoul)
+
+환경: Apple Silicon, macOS 27.0 (26A428), Command Line Tools Swift 6.4, Python 3.14.7. 화면은 내장 1800×1169와 외장 3008×1692의 확장 구성으로, 외장 화면은 내장 화면 위쪽과 왼쪽에 걸쳐 배치되어 있습니다. 아래 크기는 Quartz 논리 좌표입니다.
+
+## 확인 완료
+
+- `make check`: 화면 선택 정책 6개 Swift 테스트와 패키지 무결성 3개 Python 테스트 통과, Release 빌드·번들 자체 진단 통과.
+- `/Applications/Mouse Teleportation.app` 설치·백그라운드 실행. `SMAppService.mainApp` 상태 `enabled` 확인.
+- `swift scripts/live-check.swift`: 실제 Option + Tab 이벤트로 화면 중앙 이동, Tab 재입력 순환, 길게 누른 키 반복 억제 확인.
+- 같은 검사에서 실제 시스템 커서 배율 증가와 원래 배율 1.0 복원 확인. 앱 activation policy `prohibited`, 기존 앱 포커스 유지 확인.
+- `swift scripts/live-check.swift --check-crash-recovery`: 확대 중 앱 본체를 SIGKILL로 종료해도 별도 helper가 원래 배율로 복원함을 확인. 검사 후 앱 재실행.
+- `make package`: ZIP 추출, DMG 읽기 전용 마운트, 서명·버전·소스 정보·아키텍처·아이콘 존재·두 번들의 파일 일치·SHA-256 검사 통과.
+- 흰색 배경, 차콜 단색 음영 아이콘을 PNG 원본과 `.icns`로 반영.
+
+실제 입력 검사는 커서를 잠깐 이동시키며 끝나면 원래 위치로 돌립니다. 테스트 중에는 마우스와 키보드를 사용하지 않습니다. 비정상 종료 검사는 해당 앱 본체만 종료·재시작하며 일반 릴리스 검사에서는 자동 실행하지 않습니다.
+
+## 확인하지 않은 항목과 제약
+
+- 로그아웃·재로그인 및 재부팅은 현재 작업 세션을 끊으므로 실행하지 않았습니다. 자동 시작 API의 등록 상태까지 확인했습니다.
+- macOS 14–26의 실기기 검증, Intel Mac, 다른 Mac에서 다운로드한 파일의 최초 Gatekeeper 허용, 장시간 실행·잠자기 복귀·전체 화면 앱 조합은 검증하지 않았습니다.
+- 3개 이상 화면, 미러링·분리 후 좌표 처리는 순수 정책 테스트로 검증했으며 해당 실물 구성은 테스트하지 않았습니다.
+- 커서 확대는 실제 macOS 커서를 조절하지만 내장 흔들기 제스처 자체를 시작하는 것은 아닙니다. 비공개 SkyLight API가 변경되면 OS별 확인이 필요합니다.
+- 별도 확대 helper 자체를 SIGKILL로 종료하면 크기 복원 코드를 실행할 수 없습니다.
+- Developer ID 인증서가 없어 ad-hoc 서명으로 배포합니다. Apple 공증은 수행하지 않았습니다.
+- 현재 Command Line Tools는 존재하지 않는 일부 SDK 검색 경로 경고를 출력하며, macOS 27은 hdiutil 명령의 폐기 예정 경고를 출력합니다. 빌드·서명·패키지 검사는 정상 종료했습니다.

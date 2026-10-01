@@ -1,0 +1,15 @@
+name: 기능 제안
+description: 겪고 있는 불편과 개선 방향을 알려 주세요.
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 어떤 상황이 불편한가요?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 제안하는 동작
+    validations:
+      required: true

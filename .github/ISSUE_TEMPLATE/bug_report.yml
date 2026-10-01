@@ -1,0 +1,27 @@
+name: 버그 제보
+description: 재현 가능한 동작 문제를 알려 주세요.
+body:
+  - type: input
+    id: environment
+    attributes:
+      label: 환경
+      placeholder: macOS 버전, 앱 버전, Mac 모델
+    validations:
+      required: true
+  - type: textarea
+    id: displays
+    attributes:
+      label: 디스플레이 구성
+      description: 화면 개수, 배치, 배율, 미러링 여부를 적어 주세요.
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 재현 방법과 실제 동작
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 기대한 동작
+    validations:
+      required: true
